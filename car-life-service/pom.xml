@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>car-life-coupon</module>
+        <module>car-life-order</module>
     </modules>
 
     <properties>
