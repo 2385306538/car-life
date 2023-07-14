@@ -1,6 +1,7 @@
 package com.eugene.controller;
 
 import com.eugene.controller.request.AddCouponActivityRequest;
+import com.eugene.controller.request.CouponActivityRequest;
 import com.eugene.controller.request.UserCouponRequest;
 import com.eugene.controller.response.CouponActivityResponse;
 import com.eugene.response.Response;
@@ -40,4 +41,12 @@ public class CouponActivityController {
         List<CouponActivityResponse> couponCenterList = couponActivityService.getCouponCenterList(request);
         return Response.success(couponCenterList);
     }
+
+    @PostMapping("/getCouponActivityDetail")
+    @Operation(summary = "查询领券活动详情", description = "查询领券活动详情")
+    public Response getCouponActivityDetail(@RequestBody @Valid CouponActivityRequest request) {
+
+        return null;
+    }
+
 }
