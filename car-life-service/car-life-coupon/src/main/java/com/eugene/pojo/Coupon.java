@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.eugene.common.enums.CouponStatusEnum;
 import com.eugene.common.enums.ValidityTypeEnum;
 import com.eugene.controller.request.ReceiveCouponRequest;
+import com.eugene.controller.request.SendCouponRequest;
 import com.eugene.utils.CouponUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -65,6 +66,12 @@ public class Coupon implements Serializable {
         this.code = couponCode;
     }
 
+    /**
+     * 组装手动领券的优惠券信息
+     * @param request
+     * @param CouponTemplate
+     * @return
+     */
     public static Coupon buildCoupon(ReceiveCouponRequest request, CouponTemplate CouponTemplate) {
         Coupon coupon = new Coupon();
         coupon.setCouponTemplateCode(CouponTemplate.getCode());
@@ -94,6 +101,51 @@ public class Coupon implements Serializable {
         } else if (ValidityTypeEnum.isEffectiveDay(CouponTemplate.getValidityType())) {
             // 说明是有效天数内生效，计算有效天数
             Long validityDay = CouponTemplate.getValidityDay(); // 获取有效天数
+            Date currentDate = new Date(); // 获取当前时间
+            coupon.setBeginTime(currentDate); // 设置优惠券开始使用时间 ---> 用户优惠券表
+            // 结束时间设置为当前日期 currentDate 加上 validityDay 天之后的日期。 ---> 用户优惠券表
+            coupon.setEndTime(DateUtil.offsetDay(currentDate, Math.toIntExact(validityDay)));
+        }
+        coupon.setCreateTime(new Date());
+        coupon.setUpdateTime(new Date());
+        return coupon;
+    }
+
+    /**
+     * 组装自动发券的优惠券信息
+     * @param request
+     * @param couponTemplateCache
+     * @return
+     */
+    public static Coupon getCoupon(SendCouponRequest request, CouponTemplate couponTemplateCache) {
+        Coupon coupon = new Coupon();
+        coupon.setCouponTemplateCode(request.getCouponTemplateCode());
+
+        /**
+         * 自动发放优惠券，每一次都会重新生成一个优惠券code，需要保证券code不重复
+         * CouponUtil.getCouponCode(CouponTemplate.getId())：保证用户券code唯一
+         * 生成优惠券模版Code：
+         *          CP + 雪花算法ID
+         * 生成优惠券Code：
+         *          UCP + 券模版id % 10 + 雪花算法ID
+         */
+        coupon.setCode(getCouponCode(couponTemplateCache.getId()));
+        coupon.setUserId(request.getUserId());
+        coupon.setMobile(request.getMobile());
+        coupon.setStatus(CouponStatusEnum.AVAILABLE.getCode());
+        /**
+         * 判断优惠券模板是否为起止日期
+         * 也就是用户领取的这张优惠券是：
+         *                   起止日期内生效？
+         *                   有效天数内生效？
+         */
+        if (ValidityTypeEnum.isDeadline(couponTemplateCache.getValidityType())) {
+            // 说明起止日期内生效
+            coupon.setBeginTime(couponTemplateCache.getBeginTime()); // 设置优惠券开始使用时间 ---> 用户优惠券表
+            coupon.setEndTime(couponTemplateCache.getEndTime()); // 设置优惠券结束使用时间 ---> 用户优惠券表
+        } else if (ValidityTypeEnum.isEffectiveDay(couponTemplateCache.getValidityType())) {
+            // 说明是有效天数内生效，计算有效天数
+            Long validityDay = couponTemplateCache.getValidityDay(); // 获取有效天数
             Date currentDate = new Date(); // 获取当前时间
             coupon.setBeginTime(currentDate); // 设置优惠券开始使用时间 ---> 用户优惠券表
             // 结束时间设置为当前日期 currentDate 加上 validityDay 天之后的日期。 ---> 用户优惠券表

@@ -48,6 +48,7 @@ public class CouponRedisLuaUtil {
             userCouponScript.append("redis.call('lpush', KEYS[" + i + "], '" + coupon.getCode() + "')");
             userCouponKeys.add(String.format(USER_COUPON_KEY, coupon.getMobile()));
         }
+
         DefaultRedisScript couponRedisScript = new DefaultRedisScript();
         couponRedisScript.setScriptText(couponScript.toString());
         DefaultRedisScript userCouponRedisScript = new DefaultRedisScript();

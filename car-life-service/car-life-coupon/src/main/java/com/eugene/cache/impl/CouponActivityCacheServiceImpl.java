@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.eugene.common.constant.CouponCacheKeyConstant.getCouponActivityKey;
+
 @Service
 public class CouponActivityCacheServiceImpl implements ICouponActivityCacheService {
 
@@ -64,7 +66,7 @@ public class CouponActivityCacheServiceImpl implements ICouponActivityCacheServi
 
         // 将缓存中的 JSON 字符串转换为 CouponActivity 对象。
         CouponActivity couponActivityCache = JSONUtil.toBean((String) couponActivityCacheMap.get(CouponActivityKeyConstant.ACTIVITY_INFO), CouponActivity.class);
-        // 获取到缓存中的优惠券活动总库存数量
+        // 获取到缓存中的优惠券活动总库存数量，前端会根据这个总数量做相对应的页面展示
         Long totalNumber = Long.valueOf(String.valueOf(couponActivityCacheMap.get(CouponActivityKeyConstant.TOTAL_NUMBER)));
 
         // 将缓存中查询出来的优惠券活动信息封装并返回
@@ -80,5 +82,15 @@ public class CouponActivityCacheServiceImpl implements ICouponActivityCacheServi
         couponActivity.setCreateTime(couponActivityCache.getCreateTime());
         couponActivity.setUpdateTime(couponActivityCache.getUpdateTime());
         return couponActivity;
+    }
+
+    /**
+     * 根据优惠券活动ID删除优惠券活动缓存
+     *
+     * @param couponActivityId
+     */
+    @Override
+    public void invalidateCouponActivityCache(Long couponActivityId) {
+        redisUtil.del(getCouponActivityKey(couponActivityId));
     }
 }

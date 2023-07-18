@@ -20,13 +20,12 @@ import com.eugene.pojo.CouponActivityLog;
 import com.eugene.pojo.CouponTemplate;
 import com.eugene.service.ICouponActivityService;
 import com.eugene.service.ICouponCacheService;
-import com.eugene.service.ICouponTemplateCacheService;
+import com.eugene.cache.ICouponTemplateCacheService;
 import com.eugene.utils.CouponRedisLuaUtil;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -283,6 +282,8 @@ public class CouponActivityServiceImpl implements ICouponActivityService {
                  *      false：说明券总数量不限制 ---> 不需要扣减库存
                  */
                 if (couponActivityCache.existLimit()) {
+                    // 使用 Redis+Lua 脚本的方式保障库存超卖/超抢的问题，原子性问题等。
+                    // TODO 更新完库存需要MQ异步更新数据库库存
                     received = couponRedisLuaUtil.receive(request);
                 }
                 // 判断领券中心中的优惠券扣减库存是否成功，如果成功了，需要将活动中心扣减的优惠券信息添加给用户 ---> 用户领取到了优惠券
@@ -316,7 +317,7 @@ public class CouponActivityServiceImpl implements ICouponActivityService {
                      *          MQ挂了可以做最终一致性，保证消息不丢失，后面在补。
                      */
                     // TODO 优化：改为MQ异步更新Mysql数据库，提高性能
-                    // TODO 遇到了新问题，MQ如何保障消息不丢失，如何保障Redis和Mysql之间的数据一致性
+                    // TODO 遇到了新问题，MQ如何保障消息不丢失，如何保障 Redis和 Mysql之间的数据一致性
                     // 保存用户优惠券到用户优惠券表中
                     couponMapper.insert(coupon);
                     // 保存领券活动参与记录 TODO 改为MQ异步更新Mysql数据库，提高性能

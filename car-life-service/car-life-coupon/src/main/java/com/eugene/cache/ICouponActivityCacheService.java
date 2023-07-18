@@ -23,4 +23,11 @@ public interface ICouponActivityCacheService {
      * @return
      */
     CouponActivity getCouponActivityCache(Long couponActivityId);
+
+    /**
+     * 根据优惠券活动ID删除优惠券活动缓存
+     *
+     * @param couponActivityId
+     */
+    void invalidateCouponActivityCache(Long couponActivityId);
 }

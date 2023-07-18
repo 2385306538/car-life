@@ -12,11 +12,10 @@ import java.util.concurrent.TimeUnit;
  */
 public interface ICouponCacheService {
 
-
     /**
      * 保存优惠券缓存信息，设置失效时间为过期时间
      *
-     * @param coupon
+     * @param coupon 优惠券信息
      * @return
      */
     boolean setCouponCache(Coupon coupon);
@@ -30,21 +29,28 @@ public interface ICouponCacheService {
     boolean setCouponCache(Coupon coupon, Long time, TimeUnit timeUnit);
 
     /**
-     * 查询优惠券缓存
+     * 添加用户拥有的优惠券列表
      *
-     * @param code
+     * @param mobile 手机号
      * @return
      */
-    Coupon getCouponCache(String code);
-
+    boolean addUserCouponCode(Long mobile, String couponCode);
 
     /**
-     * 批量查询优惠券缓存
+     * 根据手机号查询用户拥有的优惠券列表
      *
-     * @param code
-     * @return
+     * @param mobile 手机号
+     * @return 返回优惠券Code列表
      */
-    List<Coupon> batchGetCouponCache(List<String> code);
+    List<String> getUserCouponCodeList(Long mobile);
+
+    /**
+     * 根据惠券Code列表批量查询优惠券缓存
+     *
+     * @param codes 惠券Code列表
+     * @return 返回优惠券列表
+     */
+    List<Coupon> batchGetCouponCache(List<String> codes);
 
     /**
      * 批量保存优惠券信息缓存，并设置券过期时间
@@ -55,20 +61,12 @@ public interface ICouponCacheService {
     boolean batchSetCouponCache(List<Coupon> coupons);
 
     /**
-     * 查询用户拥有的优惠券列表
+     * 根据券code查询优惠券缓存
      *
-     * @param mobile
+     * @param code
      * @return
      */
-    List<String> getUserCouponCodeList(Long mobile);
-
-    /**
-     * 添加用户拥有的优惠券列表
-     *
-     * @param mobile
-     * @return
-     */
-    boolean addUserCouponCode(Long mobile, String couponCode);
+    Coupon getCouponCache(String code);
 
     /**
      * 删除用户拥有的优惠券
@@ -85,6 +83,4 @@ public interface ICouponCacheService {
      * @return
      */
     boolean delCouponCache(Coupon coupon);
-
-
 }
