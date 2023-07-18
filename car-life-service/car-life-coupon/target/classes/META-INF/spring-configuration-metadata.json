@@ -1,0 +1,32 @@
+{
+  "groups": [
+    {
+      "name": "configdata",
+      "type": "com.eugene.common.config.HotConfig",
+      "sourceType": "com.eugene.common.config.HotConfig"
+    },
+    {
+      "name": "spring.redis",
+      "type": "com.eugene.common.config.RedissonConfig",
+      "sourceType": "com.eugene.common.config.RedissonConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "configdata.read-and-write-switch",
+      "type": "java.lang.String",
+      "sourceType": "com.eugene.common.config.HotConfig"
+    },
+    {
+      "name": "spring.redis.host",
+      "type": "java.lang.String",
+      "sourceType": "com.eugene.common.config.RedissonConfig"
+    },
+    {
+      "name": "spring.redis.port",
+      "type": "java.lang.Integer",
+      "sourceType": "com.eugene.common.config.RedissonConfig"
+    }
+  ],
+  "hints": []
+}
