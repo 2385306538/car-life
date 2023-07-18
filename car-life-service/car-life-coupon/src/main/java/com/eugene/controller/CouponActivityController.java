@@ -2,11 +2,14 @@ package com.eugene.controller;
 
 import com.eugene.controller.request.AddCouponActivityRequest;
 import com.eugene.controller.request.CouponActivityRequest;
+import com.eugene.controller.request.ReceiveCouponRequest;
 import com.eugene.controller.request.UserCouponRequest;
 import com.eugene.controller.response.CouponActivityResponse;
+import com.eugene.controller.response.CouponResponse;
 import com.eugene.response.Response;
 import com.eugene.service.ICouponActivityService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,8 +48,15 @@ public class CouponActivityController {
     @PostMapping("/getCouponActivityDetail")
     @Operation(summary = "查询领券活动详情", description = "查询领券活动详情")
     public Response getCouponActivityDetail(@RequestBody @Valid CouponActivityRequest request) {
-
-        return null;
+        CouponActivityResponse couponActivityResponse = couponActivityService.getCouponActivityDetail(request);
+        return Response.success(couponActivityResponse);
     }
 
+    @SneakyThrows
+    @PostMapping("/receive")
+    @Operation(summary = "用户手动领取优惠券", description = "用户手动领取优惠券")
+    public Response receive(@RequestBody @Valid ReceiveCouponRequest request) {
+        CouponResponse receive = couponActivityService.receive(request);
+        return Response.success(receive);
+    }
 }

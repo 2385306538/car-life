@@ -6,11 +6,17 @@ import com.eugene.common.constant.CouponActivityKeyConstant;
 import com.eugene.common.constant.CouponCacheKeyConstant;
 import com.eugene.pojo.CouponActivity;
 import com.eugene.utils.RedisUtil;
+import jodd.util.StringUtil;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import static com.eugene.common.constant.CouponCacheKeyConstant.getCouponActivityKey;
+
+@Service
 public class CouponActivityCacheServiceImpl implements ICouponActivityCacheService {
 
     @Resource
@@ -38,5 +44,53 @@ public class CouponActivityCacheServiceImpl implements ICouponActivityCacheServi
         couponActivityCacheMap.put(CouponActivityKeyConstant.ACTIVITY_INFO, JSONUtil.toJsonStr(couponActivity));
         couponActivityCacheMap.put(CouponActivityKeyConstant.TOTAL_NUMBER, String.valueOf(couponActivity.getTotalNumber()));
         redisUtil.hmset(CouponCacheKeyConstant.getCouponActivityKey(couponActivity.getId()), couponActivityCacheMap);
+    }
+
+    /**
+     * 根据优惠券活动ID查询优惠券活动详情缓存
+     * Redis ---> Hash 结构
+     *
+     * @param couponActivityId
+     * @return
+     */
+    @Override
+    public CouponActivity getCouponActivityCache(Long couponActivityId) {
+        Map<String, Object> couponActivityCacheMap = new HashMap<>();
+        // 从 Redis 中查询优惠券活动详情数据
+        couponActivityCacheMap = redisUtil.hmget(CouponCacheKeyConstant.getCouponActivityKey(couponActivityId));
+
+        // TODO 判断缓存是否命中，如果未命中，直接返回null，防止缓存穿透
+        if (Objects.isNull(couponActivityCacheMap) || StringUtil.isBlank((String) couponActivityCacheMap.get(CouponActivityKeyConstant.ACTIVITY_INFO))) {
+            return null;
+        }
+
+        // 将缓存中的 JSON 字符串转换为 CouponActivity 对象。
+        CouponActivity couponActivityCache = JSONUtil.toBean((String) couponActivityCacheMap.get(CouponActivityKeyConstant.ACTIVITY_INFO), CouponActivity.class);
+        // 获取到缓存中的优惠券活动总库存数量，前端会根据这个总数量做相对应的页面展示
+        Long totalNumber = Long.valueOf(String.valueOf(couponActivityCacheMap.get(CouponActivityKeyConstant.TOTAL_NUMBER)));
+
+        // 将缓存中查询出来的优惠券活动信息封装并返回
+        CouponActivity couponActivity = new CouponActivity();
+        couponActivity.setId(couponActivityCache.getId());
+        couponActivity.setName(couponActivityCache.getName());
+        couponActivity.setCouponTemplateCode(couponActivityCache.getCouponTemplateCode());
+        couponActivity.setTotalNumber(totalNumber);
+        couponActivity.setLimitNumber(couponActivityCache.getLimitNumber());
+        couponActivity.setStatus(couponActivityCache.getStatus());
+        couponActivity.setBeginTime(couponActivityCache.getBeginTime());
+        couponActivity.setEndTime(couponActivityCache.getEndTime());
+        couponActivity.setCreateTime(couponActivityCache.getCreateTime());
+        couponActivity.setUpdateTime(couponActivityCache.getUpdateTime());
+        return couponActivity;
+    }
+
+    /**
+     * 根据优惠券活动ID删除优惠券活动缓存
+     *
+     * @param couponActivityId
+     */
+    @Override
+    public void invalidateCouponActivityCache(Long couponActivityId) {
+        redisUtil.del(getCouponActivityKey(couponActivityId));
     }
 }
