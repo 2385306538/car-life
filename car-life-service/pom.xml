@@ -14,6 +14,7 @@
     <modules>
         <module>car-life-coupon</module>
         <module>car-life-order</module>
+        <module>car-life-ware</module>
     </modules>
 
     <properties>
@@ -21,5 +22,15 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+    <dependencies>
+        <dependency>
+            <groupId>com.guoshuang</groupId>
+            <artifactId>car-life-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+    </dependencies>
 </project>

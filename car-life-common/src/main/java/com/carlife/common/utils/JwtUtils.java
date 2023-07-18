@@ -1,3 +1,4 @@
+/*
 package com.carlife.common.utils;
 
 import io.jsonwebtoken.Claims;
@@ -29,11 +30,13 @@ public class JwtUtils {
                 .compact();
         return JwtToken;
     }
-    /**
+    */
+/**
      * 判断token是否存在与有效
      * @param jwtToken
      * @return
-     */
+     *//*
+
     public static boolean checkToken(String jwtToken) {
         if(jwtToken == null || "".equals(jwtToken)) return false;
         try {
@@ -44,9 +47,11 @@ public class JwtUtils {
         }
         return true;
     }
-    /**
+    */
+/**
      * 根据给定的key获取token体里面的数据，
-     */
+     *//*
+
     public static String getClaimByJwtToken(String token,String key) {
         if(token == null || "".equals(token)) return "";
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(token);
@@ -54,3 +59,4 @@ public class JwtUtils {
         return (String)claims.get(key);
     }
 }
+*/

@@ -3,7 +3,7 @@ package com.order.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "yang.thread")
+@ConfigurationProperties(prefix = "order.thread")
 @Data
 public class ThreadPoolConfigProperties {
     private Integer coreSize;
